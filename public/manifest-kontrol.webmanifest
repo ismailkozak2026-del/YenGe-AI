@@ -1,0 +1,32 @@
+{
+  "id": "/?app=kontrol",
+  "name": "YenGeç Kontrol Merkezi",
+  "short_name": "YG Kontrol",
+  "description": "YenGeç için merkezi erişim kontrolleri ve uygulama ayarları yönetim konsolu.",
+  "theme_color": "#0B0F17",
+  "background_color": "#0B0F17",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/?app=kontrol",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/kontrol-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/kontrol-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/kontrol-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

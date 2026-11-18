@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>YenGeç Kontrol Merkezi — Erişim ve Uygulama Ayarları</title>
+    <meta
+      name="description"
+      content="YenGeç için merkezi erişim kontrolleri, genel bakım yönetimi, rol/kullanıcı politikaları ve uygulama ayarları yönetim paneli."
+    />
+    <meta property="og:title" content="YenGeç Kontrol Merkezi — Erişim ve Uygulama Ayarları" />
+    <meta
+      property="og:description"
+      content="YenGeç için merkezi erişim kontrolleri, genel bakım yönetimi, rol/kullanıcı politikaları ve uygulama ayarları yönetim paneli."
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="manifest" href="/manifest-kontrol.webmanifest" />
+    <meta name="theme-color" content="#0B0F17" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="YenGeç Kontrol" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/kontrol-apple-touch-icon.png?v=3" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/kontrol-favicon-32.png?v=3" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/kontrol-favicon-16.png?v=3" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/kontrol-icon-192.png?v=3" />
+    <link rel="shortcut icon" href="/kontrol-favicon-32.png?v=3" />
+
+    <script>
+      (function() {
+        var OriginalWebSocket = window.WebSocket;
+        if (OriginalWebSocket) {
+          window.WebSocket = function(url, protocols) {
+            var urlStr = String(url || '');
+            if (urlStr.indexOf('vite') !== -1 || urlStr.indexOf('token=') !== -1 || urlStr.indexOf('protocol=') !== -1 || urlStr.indexOf('24678') !== -1) {
+              var dummy = {
+                url: urlStr,
+                readyState: 1,
+                binaryType: 'blob',
+                bufferedAmount: 0,
+                extensions: '',
+                protocol: '',
+                send: function() {},
+                close: function() {},
+                addEventListener: function(type, listener) {
+                  if (type === 'open') setTimeout(listener, 10);
+                },
+                removeEventListener: function() {},
+                dispatchEvent: function() { return false; },
+                onopen: null,
+                onmessage: null,
+                onerror: null,
+                onclose: null
+              };
+              setTimeout(function() {
+                if (typeof dummy.onopen === 'function') {
+                  try { dummy.onopen({ type: 'open', target: dummy }); } catch (e) {}
+                }
+              }, 10);
+              return dummy;
+            }
+            return new OriginalWebSocket(url, protocols);
+          };
+          window.WebSocket.prototype = OriginalWebSocket.prototype;
+          window.WebSocket.CONNECTING = 0;
+          window.WebSocket.OPEN = 1;
+          window.WebSocket.CLOSING = 2;
+          window.WebSocket.CLOSED = 3;
+        }
+
+        var originalError = window.console.error;
+        window.console.error = function() {
+          var str = '';
+          for (var i = 0; i < arguments.length; i++) {
+            var arg = arguments[i];
+            str += ' ' + (arg && (arg.message || arg.stack || (typeof arg.toString === 'function' ? arg.toString() : String(arg))));
+          }
+          if (str.indexOf('WebSocket') !== -1 || str.indexOf('[vite]') !== -1) {
+            return;
+          }
+          originalError.apply(window.console, arguments);
+        };
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-[#0B0F17] text-slate-100 antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

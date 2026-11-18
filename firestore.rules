@@ -1,0 +1,233 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'ismailkozak2026@gmail.com';
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        isBootstrappedAdmin() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidAdminUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'role', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'email', 'displayName', 'role', 'createdAt', 'updatedAt'])
+        && data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 160
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120
+        && data.role in ['super_admin', 'moderator']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidAppConfig(data) {
+      return data.keys().hasAll([
+        'appName', 'maintenanceMode', 'maintenanceMessage', 'publicAccessEnabled',
+        'requireEmailVerification', 'defaultModel', 'defaultThinkingLevel', 'defaultVoice',
+        'defaultSystemPrompt', 'allowWebSearch', 'allowImageGeneration', 'allowLiveVoice',
+        'allowPhoneCalling', 'allowQuickStudio', 'allowHtmlPreview', 'dailyMessageLimit',
+        'dailyImageLimit', 'maxUploadSizeMb', 'bannerEnabled', 'bannerText',
+        'minSupportedVersion', 'yengecApkUrl', 'kontrolApkUrl', 'updatedByUid',
+        'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'appName', 'maintenanceMode', 'maintenanceMessage', 'publicAccessEnabled',
+        'requireEmailVerification', 'defaultModel', 'defaultThinkingLevel', 'defaultVoice',
+        'defaultSystemPrompt', 'allowWebSearch', 'allowImageGeneration', 'allowLiveVoice',
+        'allowPhoneCalling', 'allowQuickStudio', 'allowHtmlPreview', 'dailyMessageLimit',
+        'dailyImageLimit', 'maxUploadSizeMb', 'bannerEnabled', 'bannerText',
+        'minSupportedVersion', 'yengecApkUrl', 'kontrolApkUrl', 'updatedByUid',
+        'createdAt', 'updatedAt'
+      ])
+      && data.appName is string && data.appName.size() >= 1 && data.appName.size() <= 80
+      && data.maintenanceMode is bool
+      && data.maintenanceMessage is string && data.maintenanceMessage.size() <= 500
+      && data.publicAccessEnabled is bool
+      && data.requireEmailVerification is bool
+      && data.defaultModel is string && data.defaultModel.size() >= 1 && data.defaultModel.size() <= 80
+      && data.defaultThinkingLevel in ['LOW', 'HIGH']
+      && data.defaultVoice in ['Kore', 'Aoede', 'Puck', 'Charon', 'Fenrir']
+      && data.defaultSystemPrompt is string && data.defaultSystemPrompt.size() <= 2000
+      && data.allowWebSearch is bool
+      && data.allowImageGeneration is bool
+      && data.allowLiveVoice is bool
+      && data.allowPhoneCalling is bool
+      && data.allowQuickStudio is bool
+      && data.allowHtmlPreview is bool
+      && data.dailyMessageLimit is int && data.dailyMessageLimit >= 0 && data.dailyMessageLimit <= 100000
+      && data.dailyImageLimit is int && data.dailyImageLimit >= 0 && data.dailyImageLimit <= 10000
+      && data.maxUploadSizeMb is int && data.maxUploadSizeMb >= 1 && data.maxUploadSizeMb <= 100
+      && data.bannerEnabled is bool
+      && data.bannerText is string && data.bannerText.size() <= 300
+      && data.minSupportedVersion is string && data.minSupportedVersion.size() >= 1 && data.minSupportedVersion.size() <= 30
+      && data.yengecApkUrl is string && data.yengecApkUrl.size() <= 500
+      && (data.yengecApkUrl == '' || data.yengecApkUrl.matches('^https://.+') || data.yengecApkUrl.matches('^/.+'))
+      && data.kontrolApkUrl is string && data.kontrolApkUrl.size() <= 500
+      && (data.kontrolApkUrl == '' || data.kontrolApkUrl.matches('^https://.+') || data.kontrolApkUrl.matches('^/.+'))
+      && data.updatedByUid is string && data.updatedByUid == request.auth.uid && data.updatedByUid.size() <= 128
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidAccessPolicy(data) {
+      return data.keys().hasAll([
+        'subjectType', 'subjectKey', 'displayName', 'accessStatus', 'roleTier',
+        'canChat', 'canSearch', 'canGenerateImage', 'canUseVoice', 'canMakeCalls',
+        'customDailyLimit', 'customDailyImageLimit', 'reason', 'ownerUid', 'createdAt', 'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'subjectType', 'subjectKey', 'displayName', 'accessStatus', 'roleTier',
+        'canChat', 'canSearch', 'canGenerateImage', 'canUseVoice', 'canMakeCalls',
+        'customDailyLimit', 'customDailyImageLimit', 'reason', 'ownerUid', 'createdAt', 'updatedAt'
+      ])
+      && data.subjectType in ['everyone', 'role', 'user', 'domain']
+      && data.subjectKey is string && data.subjectKey.size() >= 1 && data.subjectKey.size() <= 160
+      && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120
+      && data.accessStatus in ['allowed', 'restricted', 'blocked']
+      && data.roleTier in ['guest', 'standard', 'pro', 'vip', 'moderator']
+      && data.canChat is bool
+      && data.canSearch is bool
+      && data.canGenerateImage is bool
+      && data.canUseVoice is bool
+      && data.canMakeCalls is bool
+      && data.customDailyLimit is int && data.customDailyLimit >= 0 && data.customDailyLimit <= 100000
+      && data.customDailyImageLimit is int && data.customDailyImageLimit >= 0 && data.customDailyImageLimit <= 10000
+      && data.reason is string && data.reason.size() <= 400
+      && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 && data.ownerUid.matches('^[a-zA-Z0-9_\\-]+$')
+      && data.createdAt is timestamp
+      && data.updatedAt is timestamp;
+    }
+
+    function isValidAuditLog(data) {
+      return data.keys().hasAll(['action', 'summary', 'targetId', 'actorUid', 'actorEmail', 'createdAt'])
+        && data.keys().hasOnly(['action', 'summary', 'targetId', 'actorUid', 'actorEmail', 'createdAt'])
+        && data.action in [
+          'config_updated', 'policy_created', 'policy_updated',
+          'policy_deleted', 'maintenance_toggled', 'admin_added'
+        ]
+        && data.summary is string && data.summary.size() >= 1 && data.summary.size() <= 300
+        && data.targetId is string && data.targetId.size() >= 1 && data.targetId.size() <= 128 && data.targetId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.actorUid is string && data.actorUid == request.auth.uid && data.actorUid.size() <= 128
+        && data.actorEmail is string && data.actorEmail.size() >= 3 && data.actorEmail.size() <= 160
+        && data.createdAt is timestamp;
+    }
+
+    match /admins/{adminId} {
+      allow get: if isValidId(adminId) && (isAdmin() || (isVerifiedUser() && request.auth.uid == adminId));
+      allow list: if isAdmin();
+      allow create: if isValidId(adminId)
+        && isAdmin()
+        && isValidAdminUser(incoming())
+        && incoming().uid == adminId
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(adminId)
+        && isAdmin()
+        && isValidAdminUser(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'role', 'updatedAt']);
+      allow delete: if isValidId(adminId) && isBootstrappedAdmin() && adminId != request.auth.uid;
+    }
+
+    match /app_configs/{configId} {
+      allow get: if isValidId(configId) && (configId == 'global' || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(configId)
+        && isAdmin()
+        && isValidAppConfig(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(configId)
+        && isAdmin()
+        && isValidAppConfig(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'appName', 'maintenanceMode', 'maintenanceMessage', 'publicAccessEnabled',
+          'requireEmailVerification', 'defaultModel', 'defaultThinkingLevel', 'defaultVoice',
+          'defaultSystemPrompt', 'allowWebSearch', 'allowImageGeneration', 'allowLiveVoice',
+          'allowPhoneCalling', 'allowQuickStudio', 'allowHtmlPreview', 'dailyMessageLimit',
+          'dailyImageLimit', 'maxUploadSizeMb', 'bannerEnabled', 'bannerText',
+          'minSupportedVersion', 'yengecApkUrl', 'kontrolApkUrl', 'updatedByUid', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+
+    function canReadAccessPolicy(data) {
+      return data.subjectType == 'everyone'
+        || data.subjectType == 'role'
+        || (isSignedIn() && data.subjectType == 'user' && (
+          data.subjectKey == request.auth.uid ||
+          (request.auth.token.email_verified == true && data.subjectKey == request.auth.token.email)
+        ))
+        || (isVerifiedUser() && data.subjectType == 'domain' &&
+          request.auth.token.email.split('@').size() == 2 &&
+          data.subjectKey == request.auth.token.email.split('@')[1]);
+    }
+
+    match /access_policies/{policyId} {
+      allow get: if isValidId(policyId) && (isAdmin() || canReadAccessPolicy(existing()));
+      allow list: if isAdmin() || canReadAccessPolicy(resource.data);
+      allow create: if isValidId(policyId)
+        && isAdmin()
+        && isValidAccessPolicy(incoming())
+        && incoming().ownerUid == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(policyId)
+        && isAdmin()
+        && isValidAccessPolicy(incoming())
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'subjectType', 'subjectKey', 'displayName', 'accessStatus', 'roleTier',
+          'canChat', 'canSearch', 'canGenerateImage', 'canUseVoice', 'canMakeCalls',
+          'customDailyLimit', 'customDailyImageLimit', 'reason', 'updatedAt'
+        ]);
+      allow delete: if isValidId(policyId) && isAdmin();
+    }
+
+    match /audit_logs/{logId} {
+      allow get: if isValidId(logId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(logId)
+        && isAdmin()
+        && isValidAuditLog(incoming())
+        && incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

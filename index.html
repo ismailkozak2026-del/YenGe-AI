@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>YenGeç - Yeni Nesil Yapay Zeka Asistanı</title>
+    <meta name="description" content="YenGeç - Gelişmiş akıl yürütme, kod mimarı, yaratıcı üretim, görsel analizi, canlı web araması ve Türkçe ses sentezi ile donatılmış yapay zeka." />
+    <meta property="og:title" content="YenGeç - Yeni Nesil Yapay Zeka Asistanı" />
+    <meta property="og:description" content="YenGeç - Gelişmiş akıl yürütme, kod mimarı, yaratıcı üretim, görsel analizi, canlı web araması ve Türkçe ses sentezi ile donatılmış yapay zeka." />
+    <meta property="og:type" content="website" />
+
+    <link rel="manifest" href="/manifest-yengec.webmanifest" />
+    <meta name="theme-color" content="#212121" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="YenGeç" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png?v=2" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=2" />
+    <link rel="shortcut icon" href="/favicon.ico?v=2" />
+
+    <script>
+      (function() {
+        var OriginalWebSocket = window.WebSocket;
+        if (OriginalWebSocket) {
+          window.WebSocket = function(url, protocols) {
+            var urlStr = String(url || '');
+            if (urlStr.indexOf('vite') !== -1 || urlStr.indexOf('token=') !== -1 || urlStr.indexOf('protocol=') !== -1 || urlStr.indexOf('24678') !== -1) {
+              var dummy = {
+                url: urlStr,
+                readyState: 1,
+                binaryType: 'blob',
+                bufferedAmount: 0,
+                extensions: '',
+                protocol: '',
+                send: function() {},
+                close: function() {},
+                addEventListener: function(type, listener) {
+                  if (type === 'open') setTimeout(listener, 10);
+                },
+                removeEventListener: function() {},
+                dispatchEvent: function() { return false; },
+                onopen: null,
+                onmessage: null,
+                onerror: null,
+                onclose: null
+              };
+              setTimeout(function() {
+                if (typeof dummy.onopen === 'function') {
+                  try { dummy.onopen({ type: 'open', target: dummy }); } catch (e) {}
+                }
+              }, 10);
+              return dummy;
+            }
+            return new OriginalWebSocket(url, protocols);
+          };
+          window.WebSocket.prototype = OriginalWebSocket.prototype;
+          window.WebSocket.CONNECTING = 0;
+          window.WebSocket.OPEN = 1;
+          window.WebSocket.CLOSING = 2;
+          window.WebSocket.CLOSED = 3;
+        }
+
+        var originalError = window.console.error;
+        window.console.error = function() {
+          var str = '';
+          for (var i = 0; i < arguments.length; i++) {
+            var arg = arguments[i];
+            str += ' ' + (arg && (arg.message || arg.stack || (typeof arg.toString === 'function' ? arg.toString() : String(arg))));
+          }
+          if (str.indexOf('WebSocket') !== -1 || str.indexOf('[vite]') !== -1) {
+            return;
+          }
+          originalError.apply(window.console, arguments);
+        };
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-[#212121] text-[#ececec] antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/chat-main.tsx"></script>
+  </body>
+</html>

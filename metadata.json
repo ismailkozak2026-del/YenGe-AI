@@ -1,0 +1,6 @@
+{
+  "name": "Aura AI - Yeni Nesil Yapay Zeka Asistanı",
+  "description": "Gelişmiş akıl yürütme, kod mimarı, yaratıcı üretim, görsel analizi, canlı web araması ve Türkçe ses sentezi ile donatılmış yeni nesil yapay zeka platformu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

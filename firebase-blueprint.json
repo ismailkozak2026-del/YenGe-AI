@@ -1,0 +1,389 @@
+{
+  "entities": {
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized administrator allowed to manage YenGec global settings and access policies.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID of the administrator."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Verified Google account email."
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Administrator display name."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["super_admin", "moderator"],
+          "description": "Administrative privilege level."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when admin was added."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update."
+        }
+      },
+      "required": ["uid", "email", "displayName", "role", "createdAt", "updatedAt"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Global YenGec application settings and universal access flags.",
+      "type": "object",
+      "properties": {
+        "appName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Public display name of the YenGec application."
+        },
+        "maintenanceMode": {
+          "type": "boolean",
+          "description": "Global kill-switch that places YenGec into maintenance mode for all non-admin users."
+        },
+        "maintenanceMessage": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500,
+          "description": "Message shown to users during maintenance mode."
+        },
+        "publicAccessEnabled": {
+          "type": "boolean",
+          "description": "Whether unauthenticated guests can access YenGec."
+        },
+        "requireEmailVerification": {
+          "type": "boolean",
+          "description": "Whether signed-in users must have verified email."
+        },
+        "defaultModel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Default Gemini model alias used by YenGec."
+        },
+        "defaultThinkingLevel": {
+          "type": "string",
+          "enum": ["LOW", "HIGH"],
+          "description": "Default reasoning level."
+        },
+        "defaultVoice": {
+          "type": "string",
+          "enum": ["Kore", "Aoede", "Puck", "Charon", "Fenrir"],
+          "description": "Default Turkish TTS voice."
+        },
+        "defaultSystemPrompt": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2000,
+          "description": "Global system instruction applied across YenGec."
+        },
+        "allowWebSearch": {
+          "type": "boolean",
+          "description": "Global access control for Google Search grounding."
+        },
+        "allowImageGeneration": {
+          "type": "boolean",
+          "description": "Global access control for AI image generation."
+        },
+        "allowLiveVoice": {
+          "type": "boolean",
+          "description": "Global access control for Live Voice assistant."
+        },
+        "allowPhoneCalling": {
+          "type": "boolean",
+          "description": "Global access control for tel: direct calling."
+        },
+        "allowQuickStudio": {
+          "type": "boolean",
+          "description": "Global access control for Quick Studio tools."
+        },
+        "allowHtmlPreview": {
+          "type": "boolean",
+          "description": "Global access control for HTML sandbox preview."
+        },
+        "dailyMessageLimit": {
+          "type": "integer",
+          "description": "Default daily message limit per user (0-100000)."
+        },
+        "dailyImageLimit": {
+          "type": "integer",
+          "description": "Default daily image generation limit per user (0-10000)."
+        },
+        "maxUploadSizeMb": {
+          "type": "integer",
+          "description": "Maximum upload file size in MB (1-100)."
+        },
+        "bannerEnabled": {
+          "type": "boolean",
+          "description": "Whether an announcement banner is shown in YenGec."
+        },
+        "bannerText": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 300,
+          "description": "Announcement banner message."
+        },
+        "minSupportedVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30,
+          "description": "Minimum supported YenGec client version."
+        },
+        "yengecApkUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500,
+          "description": "Signed Android APK download URL for YenGec AI app."
+        },
+        "kontrolApkUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500,
+          "description": "Signed Android APK download URL for YenGec Kontrol Merkezi app."
+        },
+        "updatedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of admin who last updated the configuration."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": [
+        "appName",
+        "maintenanceMode",
+        "maintenanceMessage",
+        "publicAccessEnabled",
+        "requireEmailVerification",
+        "defaultModel",
+        "defaultThinkingLevel",
+        "defaultVoice",
+        "defaultSystemPrompt",
+        "allowWebSearch",
+        "allowImageGeneration",
+        "allowLiveVoice",
+        "allowPhoneCalling",
+        "allowQuickStudio",
+        "allowHtmlPreview",
+        "dailyMessageLimit",
+        "dailyImageLimit",
+        "maxUploadSizeMb",
+        "bannerEnabled",
+        "bannerText",
+        "minSupportedVersion",
+        "yengecApkUrl",
+        "kontrolApkUrl",
+        "updatedByUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AccessPolicy": {
+      "title": "AccessPolicy",
+      "description": "Access control rule targeting everyone, a role tier, a domain, or a specific user.",
+      "type": "object",
+      "properties": {
+        "subjectType": {
+          "type": "string",
+          "enum": ["everyone", "role", "user", "domain"],
+          "description": "Scope of the access rule."
+        },
+        "subjectKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "description": "Target identifier such as all_users, guest, domain, or user ID/email."
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Human-readable policy label."
+        },
+        "accessStatus": {
+          "type": "string",
+          "enum": ["allowed", "restricted", "blocked"],
+          "description": "Enforcement state for this target."
+        },
+        "roleTier": {
+          "type": "string",
+          "enum": ["guest", "standard", "pro", "vip", "moderator"],
+          "description": "Assigned YenGec permission tier."
+        },
+        "canChat": {
+          "type": "boolean",
+          "description": "Allow AI chat."
+        },
+        "canSearch": {
+          "type": "boolean",
+          "description": "Allow web search grounding."
+        },
+        "canGenerateImage": {
+          "type": "boolean",
+          "description": "Allow AI image generation."
+        },
+        "canUseVoice": {
+          "type": "boolean",
+          "description": "Allow live voice and TTS."
+        },
+        "canMakeCalls": {
+          "type": "boolean",
+          "description": "Allow phone calling actions."
+        },
+        "customDailyLimit": {
+          "type": "integer",
+          "description": "Daily message quota override (0 = unlimited, 1-100000)."
+        },
+        "customDailyImageLimit": {
+          "type": "integer",
+          "description": "Daily image generation quota override (0 = unlimited, 1-10000)."
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 400,
+          "description": "Administrative note or block reason."
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of the admin who created this policy."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": [
+        "subjectType",
+        "subjectKey",
+        "displayName",
+        "accessStatus",
+        "roleTier",
+        "canChat",
+        "canSearch",
+        "canGenerateImage",
+        "canUseVoice",
+        "canMakeCalls",
+        "customDailyLimit",
+        "customDailyImageLimit",
+        "reason",
+        "ownerUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable administrative audit trail entry for access control and settings changes.",
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "config_updated",
+            "policy_created",
+            "policy_updated",
+            "policy_deleted",
+            "maintenance_toggled",
+            "admin_added"
+          ],
+          "description": "Type of administrative event."
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "description": "Human-readable change description."
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Affected document identifier."
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of admin performing the action."
+        },
+        "actorEmail": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Email of admin performing the action."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        }
+      },
+      "required": ["action", "summary", "targetId", "actorUid", "actorEmail", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": {
+        "$ref": "#/entities/AdminUser"
+      },
+      "description": "Authorized YenGec control plane administrators."
+    },
+    "/app_configs/{configId}": {
+      "schema": {
+        "$ref": "#/entities/AppConfig"
+      },
+      "description": "Global YenGec application configuration documents (primary document id: global)."
+    },
+    "/access_policies/{policyId}": {
+      "schema": {
+        "$ref": "#/entities/AccessPolicy"
+      },
+      "description": "Per-target and global YenGec access control policies."
+    },
+    "/audit_logs/{logId}": {
+      "schema": {
+        "$ref": "#/entities/AuditLog"
+      },
+      "description": "Immutable history of configuration and access policy modifications."
+    }
+  }
+}
